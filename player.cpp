@@ -14,12 +14,19 @@ Player::Player(Side side) {
      * precalculating things, etc.) However, remember that you will only have
      * 30 seconds.
      */
+    
+    // save side
+    us = side;
+    
+    // initialize board
+	gameboard = new Board();
 }
 
 /*
  * Destructor for the player.
  */
 Player::~Player() {
+	delete gameboard;
 }
 
 /*
@@ -39,5 +46,22 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */ 
+    if (gameboard->hasMoves(us))
+    {
+        std::cerr << "Moves available" << std::endl;
+		std::cerr << "Getting move" << std::endl;
+		for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Move move(i, j);
+                if (gameboard->checkMove(&move, us))
+                {
+                    Move *first = &move;
+                    std::cerr << "Placing piece at: " << move.x << " " << move.y
+                              << std::endl;
+                    return first;
+                }
+            }
+        }
+	}
     return NULL;
 }
