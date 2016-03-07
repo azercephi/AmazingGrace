@@ -1,3 +1,3 @@
-# AmazingGrace
+Caltech CS2 Assignment 9: Othello
 
-This is a brave endeavor to pass CS 2, made by Jessica Li and Lucy Chen after many weeks of struggle and perserverance. 
+See [assignment9_part1.html](http://htmlpreview.github.io/?https://github.com/caltechcs2/othello/blob/master/assignment9_part1.html) and [assignment9_part2.html](http://htmlpreview.github.io/?https://github.com/caltechcs2/othello/blob/master/assignment9_part2.html)
