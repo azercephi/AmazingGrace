@@ -60,49 +60,61 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     // add opponent's move to our board
     gameboard->doMove(opponentsMove, them);
     
-    if (testingMinimax) {
+    if (testingMinimax) 
+    {
+        // make a vector of boards-result possibilities that spring from your original board, 
+        // from which we will end up only choosing one
+        vector<Board> OurBector = MakeBector(gameboard, us);
 
-        if (gameboard->hasMoves(us))
+        // then let's iterate through the boards in that vector, updating their ChildMinScore
+        // so we can choose the one with the lowest such score
+        for (int i = 0; i < OurBector.size(); i++) 
         {
-        // test print std::cerr << "Moves available" << std::endl;
-        // test print std::cerr << "Getting move" << std::endl:
+            // make a vector of the opponent's possible boards
+            vector<Board> TheirBector = MakeBector(OurBector[i], them);
 
-        for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    Move move(i, j);
-                    if (gameboard->checkMove(&move, us))
-                    {
-                        // test print std::cerr << "Placing piece at: " << ourMove->x << " " << ourMove->y
-                        //          << std::endl;
-                        
+            // get the ChildMinScore
+            OurBector[i].ChildMinScore = FindMinBoard(TheirBector, us);
+        }
 
+        // find the member of OurBector with the lowest ChildMinScore
 
-                        // Move *move = player->doMove(NULL, 0);
-                    }
-                }
+        minChildMin = OurBector[0].ChildMinScore;
+        minimaxBoard = OurBector[0];
+
+        for (int i = 1; i < OurBector.size(); i++) 
+        {
+            if (OurBector[i].ChildMinScore > minChildMin)
+            {
+                minChildMin = OurBector[i].ChildMinScore;
+                minimaxBoard = OurBector[i];
             }
         }
-        return NULL;
+
+        gameboard->doMove(minimaxBoard->originMove, us);
     }
 
     // naive solution (working AI plays random valid moves)
-    else {
+    else 
+    {
 
         if (gameboard->hasMoves(us))
         {
             // test print std::cerr << "Moves available" << std::endl;
     		// test print std::cerr << "Getting move" << std::endl;
-    		for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
+    		for (int i = 0; i < 8; i++) 
+            {
+                for (int j = 0; j < 8; j++) 
+                {
                     Move move(i, j);
                     if (gameboard->checkMove(&move, us))
                     {
                         // test print std::cerr << "Placing piece at: " << ourMove->x << " " << ourMove->y
                         //          << std::endl;
                         // perform our move on our own board
-                        Move * ourMove = new Move(i, j);
-                        gameboard->doMove(ourMove, us);
-                        return ourMove;
+                        Move * iMove = new Move(i, j);
+                        gameboard->doMove(iMove, us);
+                        return iMove;
                     }
                 }
             }
@@ -112,22 +124,103 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 }
 
 
-Move * tryMove = new Move(i, j);
 
-// make a new board to explore with
-Board * testboard = gameboard->copy();
+// given starting board and a side, make a vector of the boards resulting from all your 
+// possible moves
+vector<Board> MakeBector(Board board, Side side) {
+    
+    vector<Move*> MyMovector = MakeMovector(board, side);
 
-// perform our move on testboard
-testboard->doMove(tryMove, us);
+    vector<Board> MyBector;
+    for (int i = 0; i < MyMovector.size(); i++) 
+    {
+        // make a new board to explore with
+        Board * testboard = board.copy();
 
-MoveChooser * MoveChoice = new MoveChooser(testboard);
+        // perform our move on testboard
+        testboard.doMove(MyMovector[i], side);
 
-MoveChoice->originMove = tryMove;
+        // give testboard an origin move
+        testboard.originMove = MyMovector[i];
 
-MoveChoice->possMoves.push_back(tryMove);
-MoveChoice->TestScore = testboard->countBlack() - testboard->countWhite();
+        // add testboard to Bector
+        MyBector.push_back(testboard);
+    }
 
-Heuristic
+    return MyBector;
+}
+
+
+// given starting board, generate vector of possible moves
+vector<Move*> MakeMovector(Board board, Side side) {
+
+    vector<Move*> MyMovector;
+    if (board.hasMoves(side))
+    {
+        for (int i = 0; i < 8; i++) 
+        {
+            for (int j = 0; j < 8; j++) 
+            {
+                Move move(i, j);
+                if (board.checkMove(&move, side))
+                {
+                    Move * newMove = new Move(i, j);
+                    MyMovector.push_back(newMove);
+                }
+            }
+        }
+
+        return MyMovector;
+    }
+    return NULL;
+}
+
+
+// this function finds the maximum score among the boards given a vector of boards
+// returns the board
+Board FindMaxBoard(vector<Board> Bector, Side side) {
+    int maxScore = FindBoardScore(Bector[0], side);
+    Board maxBoard;
+    for (int i = 1; i < Bector.size(); i++) 
+    {
+        if (FindBoardScore(Bector[i], side) > maxScore) 
+        {
+            maxScore = FindBoardScore(Bector[i], side);
+            maxBoard = Bector[i];
+        }
+    }
+    return maxBoard;
+}
+
+
+// this function finds the minimum score among the boards given a vector of boards
+// returns the board with the lowest score
+int FindMinBoard(vector<Board> Bector, Side side) {
+    int minScore = FindBoardScore(Bector[0], side);
+    Board minBoard;
+    for (int i = 1; i < Bector.size(); i++) 
+    {
+        if (FindBoardScore(Bector[i], side) < minScore) 
+        {
+            minScore = FindBoardScore(Bector[i], side);
+            minBoard = Bector[i];
+        }
+    }
+    return minScore;
+}
+
+
+int FindBoardScore(Board board, Side side) {
+    if (side == WHITE) 
+    {
+        return board.countWhite() - board.countBlack();
+    }
+    else 
+    {
+        return board.countBlack() - board.countWhite();
+    }
+}
+
 
 /* Initialize MoveChooser
  *

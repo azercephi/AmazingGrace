@@ -5,6 +5,7 @@
 #include <iostream>
 #include "common.h"
 #include "board.h"
+#include <vector>
 using namespace std;
 
 class Player {
@@ -14,6 +15,11 @@ public:
     ~Player();
     
     Move *doMove(Move *opponentsMove, int msLeft);
+    vector<Board> MakeBector(Board * board, Side side);
+    vector<Move*> MakeMovector(Board * board, Side side);
+    Board FindMaxBoard(vector<Board> Bector, Side side);
+    int FindMinBoard(vector<Board> Bector, Side side);
+    int FindBoardScore(Board * board, Side side);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
@@ -36,20 +42,22 @@ public:
 	// how far are we looking into the future?
 	int PlyCount = PLYCOUNT;
 
-	// what's our current test score?
-	int TestScore;
+	// what's our current board score?
+	int BoardScore;
 
+	// vector member holding all possible moves from this point on
+	vector<Move> possMoves;
+
+	// vector of pointers for those moves, man
+	vector<Move*> possMovesPtr;
+
+
+	// move following two variables to board class
 	// move that got to current test board state
 	Move *originMove;
 
-	// vector member holding all possible moves from this point on
-	std::vector<Move> possMoves;
-
-	// vector of pointers for those moves, man
-	std::vector<Move*> possMovesPtr;
-
 	// final minimum child score
-	int BranchMinScore;
+	int ChildMinScore;
 
 };
 
