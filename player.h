@@ -19,7 +19,28 @@ public:
     
     // state variables
     Side us;
+    Side them;
     Board *gameboard;
+};
+
+
+class WhichMove {
+
+public:
+	ChooseMove(Board board); // needs to take in current board
+	~ChooseMove();
+
+	// State variables: 
+
+	// move that got to current proposed board state
+	Move *originMove;
+
+	// vector member holding all possible moves from this point
+	Move *possibleMove;
+
+	// final minimum child score
+	int BranchMinScore;
+
 };
 
 #endif

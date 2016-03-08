@@ -17,7 +17,17 @@ Player::Player(Side side) {
     
     // save side
     us = side;
-    
+    // Side them; 
+
+    if (us == BLACK) 
+    {
+        them = WHITE;
+    }
+    else 
+    {
+        them = BLACK;
+    }
+
     // initialize board
 	gameboard = new Board();
 }
@@ -46,22 +56,54 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */ 
-    if (gameboard->hasMoves(us))
-    {
-        std::cerr << "Moves available" << std::endl;
-		std::cerr << "Getting move" << std::endl;
-		for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Move move(i, j);
-                if (gameboard->checkMove(&move, us))
-                {
-                    Move *first = &move;
-                    std::cerr << "Placing piece at: " << move.x << " " << move.y
-                              << std::endl;
-                    return first;
+    
+    if (testingMinimax) {
+
+        // add opponent's move to our board
+        gameboard->doMove(opponentsMove, them);
+
+        if (gameboard->hasMoves(us))
+        {
+        // test print std::cerr << "Moves available" << std::endl;
+        // test print std::cerr << "Getting move" << std::endl;
+        for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    Move * ourMove = new Move(i, j);
+                    if (gameboard->checkMove(ourMove, us))
+                    {
+                        // test print std::cerr << "Placing piece at: " << ourMove->x << " " << ourMove->y
+                        //          << std::endl;
+                        // perform our move on our own board
+                        gameboard->doMove(ourMove, us);
+                        return ourMove;
+                    }
                 }
             }
         }
-	}
-    return NULL;
+        return NULL;
+    }
+
+    // naive solution (working AI plays random valid moves)
+    else {
+
+        if (gameboard->hasMoves(us))
+        {
+            // test print std::cerr << "Moves available" << std::endl;
+    		// test print std::cerr << "Getting move" << std::endl;
+    		for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    Move * ourMove = new Move (i, j);
+                    if (gameboard->checkMove(ourMove, us))
+                    {
+                        // test print std::cerr << "Placing piece at: " << ourMove->x << " " << ourMove->y
+                        //          << std::endl;
+                        // perform our move on our own board
+                        gameboard->doMove(ourMove, us);
+                        return ourMove;
+                    }
+                }
+            }
+    	}
+        return NULL;
+    }
 }
