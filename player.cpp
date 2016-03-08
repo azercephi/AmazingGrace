@@ -56,26 +56,28 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */ 
+
+    // add opponent's move to our board
+    gameboard->doMove(opponentsMove, them);
     
     if (testingMinimax) {
-
-        // add opponent's move to our board
-        gameboard->doMove(opponentsMove, them);
 
         if (gameboard->hasMoves(us))
         {
         // test print std::cerr << "Moves available" << std::endl;
-        // test print std::cerr << "Getting move" << std::endl;
+        // test print std::cerr << "Getting move" << std::endl:
+
         for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
-                    Move * ourMove = new Move(i, j);
-                    if (gameboard->checkMove(ourMove, us))
+                    Move move(i, j);
+                    if (gameboard->checkMove(&move, us))
                     {
                         // test print std::cerr << "Placing piece at: " << ourMove->x << " " << ourMove->y
                         //          << std::endl;
-                        // perform our move on our own board
-                        gameboard->doMove(ourMove, us);
-                        return ourMove;
+                        
+
+
+                        // Move *move = player->doMove(NULL, 0);
                     }
                 }
             }
@@ -92,12 +94,13 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     		// test print std::cerr << "Getting move" << std::endl;
     		for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
-                    Move * ourMove = new Move (i, j);
-                    if (gameboard->checkMove(ourMove, us))
+                    Move move(i, j);
+                    if (gameboard->checkMove(&move, us))
                     {
                         // test print std::cerr << "Placing piece at: " << ourMove->x << " " << ourMove->y
                         //          << std::endl;
                         // perform our move on our own board
+                        Move * ourMove = new Move(i, j);
                         gameboard->doMove(ourMove, us);
                         return ourMove;
                     }
@@ -107,3 +110,46 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         return NULL;
     }
 }
+
+
+Move * tryMove = new Move(i, j);
+
+// make a new board to explore with
+Board * testboard = gameboard->copy();
+
+// perform our move on testboard
+testboard->doMove(tryMove, us);
+
+MoveChooser * MoveChoice = new MoveChooser(testboard);
+
+MoveChoice->originMove = tryMove;
+
+MoveChoice->possMoves.push_back(tryMove);
+MoveChoice->TestScore = testboard->countBlack() - testboard->countWhite();
+
+Heuristic
+
+/* Initialize MoveChooser
+ *
+ *
+ *
+ *
+ *
+ */
+
+MoveChooser::MoveChooser(Board * board) {
+    // needs to take in current board
+}
+
+
+MoveChooser::~MoveChooser() {
+
+}
+
+// move that got to current proposed board state
+Move *originMove;
+
+// vector member holding all possible moves from this point
+
+// final minimum child score
+int BranchMinScore;

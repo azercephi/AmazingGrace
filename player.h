@@ -1,5 +1,6 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
+#define PLYCOUNT 2
 
 #include <iostream>
 #include "common.h"
@@ -24,19 +25,28 @@ public:
 };
 
 
-class WhichMove {
+class MoveChooser {
 
 public:
-	ChooseMove(Board board); // needs to take in current board
-	~ChooseMove();
+	MoveChooser(Board * board); // needs to take in current board
+	~MoveChooser();
 
 	// State variables: 
 
-	// move that got to current proposed board state
+	// how far are we looking into the future?
+	int PlyCount = PLYCOUNT;
+
+	// what's our current test score?
+	int TestScore;
+
+	// move that got to current test board state
 	Move *originMove;
 
-	// vector member holding all possible moves from this point
-	Move *possibleMove;
+	// vector member holding all possible moves from this point on
+	std::vector<Move> possMoves;
+
+	// vector of pointers for those moves, man
+	std::vector<Move*> possMovesPtr;
 
 	// final minimum child score
 	int BranchMinScore;
