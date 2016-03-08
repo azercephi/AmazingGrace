@@ -28,17 +28,19 @@ int main(int argc, char *argv[]) {
 
 
     /** 
-     * TODO: Write code to set your player's internal board state to the 
+     * Write code to set your player's internal board state to the 
      * example state.
      */
-    gameboard = board->copy();
+    player->gameboard = board->copy();
 
     // Get player's move and check if it's right.
     Move *move = player->doMove(NULL, 0);
 
     if (move != NULL && move->x == 1 && move->y == 1) {
         printf("Correct move: (1, 1)");
-    } else {
+        std::cerr << std::endl;
+    }
+    else {
         printf("Wrong move: got ");
         if (move == NULL) {
             printf("PASS");

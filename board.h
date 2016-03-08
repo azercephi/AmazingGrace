@@ -30,6 +30,9 @@ public:
     int countWhite();
 
     void setBoard(char data[]);
+    
+    int ChildMinScore;
+    Move * originMove;
 };
 
 #endif
