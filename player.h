@@ -17,7 +17,7 @@ public:
     vector<Board> MakeBector(Board board, Side side);
     vector<Move*> MakeMovector(Board board, Side side);
     Board FindMaxBoard(vector<Board> Bector, Side side);
-    int FindMinBoard(vector<Board> Bector, Side side);
+    int FindMinBoard(vector<Board> Bector, Side side, int backup);
     int FindBoardScore(Board board, Side side);
 
     // Flag to tell if the player is running within the test_minimax context

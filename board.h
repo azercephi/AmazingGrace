@@ -32,7 +32,7 @@ public:
     void setBoard(char data[]);
     
     int ChildMinScore;
-    Move * originMove;
+    Move * originMove = NULL;
 };
 
 #endif
