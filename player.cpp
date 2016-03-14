@@ -61,6 +61,41 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     // implement Minimax
     if (testingMinimax) 
     {
+        // make a vector of our moves at current depth
+        vector<Move*> Movector = MakeMovector(*gameboard, us); 
+
+        // check edge case
+        if (Movector.empty())
+        {
+            return NULL;
+        }
+
+        // if moves exist
+        else
+        {
+            int BestScore = -70; // want lowest value of score
+            Move * BestMove = NULL;
+
+            for (unsigned int i = 0; i < Movector.size(); i++)
+            {
+                Board * gameboardcopy = gameboard->copy();
+                gameboardcopy->doMove(Movector[i], us);
+                int score = Minimax(gameboardcopy, them, 7, 1);
+                if (score > BestScore)
+                {
+                    BestMove = Movector[i];
+                    BestScore = score;
+                }
+            }
+
+            // perform our move on our own board
+            gameboard->doMove(BestMove, us);
+
+            cerr << "Grace's BestMove: " << BestMove->x << "," << BestMove->y << endl;
+            return BestMove;
+        }
+
+    /* 
         // make a vector of boards-result possibilities that spring from your 
         // original board, 
         // from which we will end up only choosing one
@@ -105,6 +140,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         }
         // else
         return NULL;
+    
+    */
     }
 
     // naive solution (working AI plays random valid moves)
@@ -236,150 +273,96 @@ int Player::FindBoardScore(Board board, Side side) {
 }
 
 
+ /*
+OUTLINE
 
-/**=====================================================================**
+minimax(Board, Side, Depth)
+    int BestScore = -INFTY //best score for each level
 
-#include <iostream>
-#include "common.h"
-#include "board.h"
-#include <vector>
-#include <stdio.h>
-#include <assert.h>
-using namespace std;
-
-class GameTree {
-
-private:
-	struct Node {
-		// number of many moves in the future
-		// if odd -> opponent
-		unsigned int layer;
-		
-		// current board
-		Board* curr;
-		
-		// what move was taken to get here from previous step is stored 
-		// in board object
-
-		// pointer to vector of next possible set of boards
-		vector<Node*> Bector;
-		
-		// constructor
-		Node(Board* board, unsigned int l) {
-			curr = board;
-			layer = l;
-		}
-		
-		// destructor
-		~Node() {
-			if (Bector.empty())
-			{
-				// delete all pointers in Bector
-				for (auto &b : Bector)
-				{
-					delete b;
-				}
-			}
-		}
-		
-		// populates Bector
-		void MakeBector(Side nextSide) {
-			assert(curr != NULL);
-			
-			// iterate through all squares to find valid moves
-			for (int i = 0; i < 8; i++)
-			{
-				for (int j = 0; j < 8; j++)
-				{
-					Move move(i, j);
-					// if a valid move is found
-					if (curr->checkMove(&move, nextSide))
-					{
-						// make a new board to explore with
-						Board * testboard = curr->copy();
-
-						// perform our move on testboard
-						testboard->doMove(&move, nextSide);
-
-						// give testboard an origin move
-						testboard->originMove = &move;
-
-						// create and add Node to Bector
-						Node* newNode = new Node(testboard, layer + 1);
-						Bector.push_back(newNode);
-					}
-				}
-			}
-		}
-		
-		// grow into a tree of desired depth
-		int grow(unsigned int depth, Side us, Side them) {
-			while (layer != depth)
-			{
-				// figure out which side is next
-				Side nextSide = ((layer & 2) == 0) ? them : us;
-				this->MakeBector(nextSide);
-				
-				// recurse
-				for (auto &b : Bector) {
-					b->grow(depth, us, them);
-				}
-			}
-			
-			return 1; // equivalent to return true
-		}
-	};
-	
-	// create a game tree of depth # of moves into future
-	
-	// minimax upwards
-	
-	Node * root;
-	
-	unsigned int depth;
-	
-	Side us, them;
-	
-public:
-    GameTree(Board* curr, unsigned int ply, Side side) {
-		// initialize total depth
-		depth = ply;
-		
-		// initialize root node
-		root->layer = 0;
-		root->curr = curr;
-		
-		// save sides
-		us = side;
-		them = (us == BLACK) ? WHITE : BLACK; 
-	}
-
-    ~GameTree() { delete root; }
+    if no legal moves
+        return current board score
     
-    int scry() {
-		return root->grow(depth, us, them);
-	}
-};
-
-int main()
-{
-	// Create board with example state. You do not necessarily need to use
-    // this, but it's provided for convenience.
-    char boardData[64] = {
-        ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-        ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 
-        ' ', 'b', ' ', ' ', ' ', ' ', ' ', ' ', 
-        'b', 'w', 'b', 'b', 'b', 'b', ' ', ' ', 
-        ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 
-        ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 
-        ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 
-        ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '
-    };
-    Board *board = new Board();
-    board->setBoard(boardData);
-    
-	GameTree* tree = new GameTree(board, 2, BLACK);
-	
-	return tree->scry();
-}
+    for each legal move
+        Board.copy
+        copy.domove
+        score = minimax()
+        compare score to BestScore, 
+    return BestScore
  */
+
+int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth) {
+    
+    if (CurrentDepth == depth)
+    {
+        return FindBoardScore(*board, side);
+    }
+
+    // else
+    vector<Move*> Movector = MakeMovector(*board, side);
+    if (Movector.empty())
+    {
+        return FindBoardScore(*board, side);
+    }
+
+        // else
+
+    // instead of switching checking for min / max every layer,
+    // each recursive call looks 2 plays ahead and just returns the max
+    if (CurrentDepth % 2 == 0) // parity 0, our side's move, maximize score
+    {
+        int BestScore = -70; 
+
+        for (unsigned int i = 0; i < Movector.size(); i++)
+        {
+            Board * boardcopy = board->copy();
+            boardcopy->doMove(Movector[i], side);
+
+            Side nextside;
+            if (side == BLACK) 
+            {
+                nextside = WHITE;
+            }
+            else 
+            {
+                nextside = BLACK;
+            }
+
+            int score = Minimax(boardcopy, nextside, depth, CurrentDepth + 1);
+
+            if (score > BestScore)
+            {
+                BestScore = score;
+            }
+        }
+        return BestScore;
+    }
+
+    else // parity 1, opponent's move, minimize score
+    {
+        int WorstScore = 70;
+        for (unsigned int i = 0; i < Movector.size(); i++)
+        {
+            Board * boardcopy = board->copy();
+            boardcopy->doMove(Movector[i], side);
+
+            Side nextside;
+            if (side == BLACK) 
+            {
+                nextside = WHITE;
+            }
+            else 
+            {
+                nextside = BLACK;
+            }
+
+            int score = Minimax(boardcopy, nextside, depth, CurrentDepth + 1);
+
+            if (score < WorstScore)
+            {
+                WorstScore = score;
+            }
+        }
+        return WorstScore;
+    }
+
+}

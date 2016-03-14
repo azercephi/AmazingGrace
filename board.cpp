@@ -3,6 +3,21 @@
 /*
  * Make a standard 8x8 othello board and initialize it to the standard setup.
  */
+
+
+ /*
+OUTLINE
+
+minimax(Board, Player, Depth)
+    int BestScore = -INFTY
+
+    for each legal move
+        Board.copy
+        copy.domove
+        score = minimax()
+
+
+ */
 Board::Board() {
     taken.set(3 + 8 * 3);
     taken.set(3 + 8 * 4);
