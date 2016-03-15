@@ -75,7 +75,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
                 Board * gameboardcopy = gameboard->copy();
                 gameboardcopy->doMove(Movector[i], us);
                 // should make sure to call even number depth
-                int score = Minimax(gameboardcopy, them, 6, 1, -70, 70);
+                int score = Minimax(gameboardcopy, them, 4, 1, -70, 70);
                 if (score > BestScore)
                 {
                     BestMove = Movector[i];
@@ -223,15 +223,60 @@ int Player::FindMinBoard(vector<Board> Bector, Side side, int backup) {
 }
 
 
-int Player::FindBoardScore(Board board, Side side) {
-    if (side == WHITE) 
-    {
-        return board.countWhite() - board.countBlack();
-    }
-    else 
-    {
-        return board.countBlack() - board.countWhite();
-    }
+int Player::FindBoardScore(Board board, Side side) { // our heuristic, basically
+    
+    // // beginning through middle of the game (when corner pieces are very valuable)
+    // if (board.countWhite() + board.countBlack() < 54)
+    // {
+    //     int score;
+    //     if (side == WHITE) 
+    //     {
+    //         score = board.countWhite() - board.countBlack();
+    //         // for () // spots in corners
+    //         // {
+    //         //     // iterate 
+    //         // }
+    //     }
+    //     else 
+    //     {
+    //         score = board.countBlack() - board.countWhite();
+    //         // for () // spots in corners
+    //         // {
+    //         //     // iterate through spots in corners
+    //         // }
+    //     }
+    //     if (board.get(side, 0, 0))
+    //     {
+    //         score += 5;
+    //     }
+    //     if (board.get(side, 7, 7))
+    //     {
+    //         score += 5;
+    //     }
+    //     if (board.get(side, 0, 7))
+    //     {
+    //         score += 5;
+    //     }
+    //     if (board.get(side, 7, 0))
+    //     {
+    //         score += 5;
+    //     }
+    //     return score;
+    // }
+
+    // // towards the end of the game
+    // else
+    // {
+        if (side == WHITE) 
+        {
+            return board.countWhite() - board.countBlack();
+        }
+        else 
+        {
+            return board.countBlack() - board.countWhite();
+        }
+    // }
+
 }
 
 
@@ -250,6 +295,8 @@ minimax(Board, Side, Depth)
         score = minimax()
         compare score to BestScore, 
     return BestScore
+
+now with alpha-beta pruning!
  */
 
 int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth,
@@ -292,7 +339,7 @@ int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth,
             if (BestScore > alpha)
                 alpha = BestScore;
             
-            if (abs(beta) <= alpha)
+            if (beta <= alpha) // abs(beta) <= alpha
                 break;
         }
         return BestScore;
@@ -319,7 +366,7 @@ int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth,
             if (WorstScore < beta)
                 beta = WorstScore;
                 
-            if (abs(beta) >= alpha)
+            if (beta <= alpha) // abs(beta) >= alpha
                 break;
         }
         return WorstScore;

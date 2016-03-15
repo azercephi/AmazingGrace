@@ -8,7 +8,8 @@ In the second week, Jessica resolved the inconsistent segfaults caused by forget
 consider edge cases in the first iterative approach. Next, Jessica and Lucy outlined in 
 pseudocode a recursive approach to minimax to allow for more than two plays in the future. 
 After implementing and debugging it together, they began to play around with parameters to 
-beat other players and optimize.
+beat other players and optimize. Jessica implemented alpha-beta pruning, and Lucy  tried  to 
+improve the heuristic. 
 
 Improvements made to AI:
 
@@ -21,4 +22,7 @@ Improvements made to AI:
     them whever they become occupied. This failed to work. 
 
 -- Alpha-beta pruning to filter out undesireable paths, reducing the amount of recursive
-   calculations.
+   calculations. 
+
+-- Tried to improve heuristic weight corner pieces more heavily early in the game. Didn't really 
+   work out. 

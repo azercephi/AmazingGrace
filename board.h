@@ -34,7 +34,7 @@ public:
     
     int ChildMinScore;
     Move * originMove = NULL;
-    //std::set<Move> possible;
+    // set<Move> possible;
 };
 
 #endif
