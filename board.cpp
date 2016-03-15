@@ -10,6 +10,14 @@ Board::Board() {
     taken.set(4 + 8 * 4);
     black.set(4 + 8 * 3);
     black.set(3 + 8 * 4);
+    
+    // initialize set of unoccupied spaces
+    for (int x = 0; x < 8; x++) {
+		for (int y = 0; y < 8; y++) {
+			if (!(occupied(x, y)))
+				possible.insert(Move(x, y));
+		}
+	}
 }
 
 /*
@@ -25,6 +33,7 @@ Board *Board::copy() {
     Board *newBoard = new Board();
     newBoard->black = black;
     newBoard->taken = taken;
+    newBoard->possible = possible;
     return newBoard;
 }
 
@@ -39,6 +48,8 @@ bool Board::get(Side side, int x, int y) {
 void Board::set(Side side, int x, int y) {
     taken.set(x + 8*y);
     black.set(x + 8*y, side == BLACK);
+    // update set of possible moves
+    possible.erase(Move(x, y));
 }
 
 bool Board::onBoard(int x, int y) {

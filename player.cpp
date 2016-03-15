@@ -163,6 +163,22 @@ vector<Move*> Player::MakeMovector(Board board, Side side) {
     return MyMovector;
 }
 
+/* Generate vector of possible moves by only checking the unoccuppied spaces
+ */
+vector <Move*> Player::MakeMovector2(Board board, Side side) {
+    vector<Move*> MyMovector;
+    
+    // only check unoccuppied spaces
+    std::set<Move>::iterator it;
+    for (it = board.possible.begin(); it !=board.possible.end(); ++ it) {
+        Move *move = &(*it);
+        if (board.checkMove(move, side)) {
+            MyMovector.push_back(move);
+        }
+    }
+    
+    return MyMovector;
+}
 
 /* this function finds the maximum score among the boards given a vector of 
  * boards and returns the correponding board */

@@ -16,6 +16,7 @@ public:
     Move *doMove(Move *opponentsMove, int msLeft);
     vector<Board> MakeBector(Board board, Side side);
     vector<Move*> MakeMovector(Board board, Side side);
+    vector<Move*> MakeMovector2(Board board, Side side);
     Board FindMaxBoard(vector<Board> Bector, Side side);
     int FindMinBoard(vector<Board> Bector, Side side, int backup);
     int FindBoardScore(Board board, Side side);

@@ -20,6 +20,11 @@ public:
 
     void setX(int x) { this->x = x; }
     void setY(int y) { this->y = y; }
+    
+    // operator overloading so that set can be used
+    bool operator <(const Move& m) {
+		return (x + 8*y) < (m.x + 8*m.y);
+	}
 };
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <bitset>
 #include "common.h"
+#include <set>
 using namespace std;
 
 class Board {
@@ -33,6 +34,7 @@ public:
     
     int ChildMinScore;
     Move * originMove = NULL;
+    std::set<Move> possible;
 };
 
 #endif
