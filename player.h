@@ -20,7 +20,8 @@ public:
     Board FindMaxBoard(vector<Board> Bector, Side side);
     int FindMinBoard(vector<Board> Bector, Side side, int backup);
     int FindBoardScore(Board board, Side side);
-    int Minimax(Board * board, Side side, int depth, int CurrentDepth);
+    int Minimax(Board * board, Side side, int depth, int CurrentDepth,
+                    int alpha, int beta);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;

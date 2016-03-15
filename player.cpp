@@ -1,4 +1,5 @@
 #include "player.h"
+#include <cmath>
 
 /*
  * Constructor for the player; initialize everything here. The side your AI is
@@ -73,7 +74,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
             {
                 Board * gameboardcopy = gameboard->copy();
                 gameboardcopy->doMove(Movector[i], us);
-                int score = Minimax(gameboardcopy, them, 5, 1);
+                // should make sure to call even number depth
+                int score = Minimax(gameboardcopy, them, 6, 1, -70, 70);
                 if (score > BestScore)
                 {
                     BestMove = Movector[i];
@@ -164,7 +166,7 @@ vector<Move*> Player::MakeMovector(Board board, Side side) {
 }
 
 /* Generate vector of possible moves by only checking the unoccuppied spaces
- */
+
 vector <Move*> Player::MakeMovector2(Board board, Side side) {
     vector<Move*> MyMovector;
     
@@ -179,6 +181,7 @@ vector <Move*> Player::MakeMovector2(Board board, Side side) {
     
     return MyMovector;
 }
+*/
 
 /* this function finds the maximum score among the boards given a vector of 
  * boards and returns the correponding board */
@@ -249,7 +252,8 @@ minimax(Board, Side, Depth)
     return BestScore
  */
 
-int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth) {
+int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth,
+                        int alpha, int beta) {
     
     if (CurrentDepth == depth)
     {
@@ -280,12 +284,16 @@ int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth) {
             Side nextside = (side == BLACK) ? WHITE : BLACK;
             
             // recursive call
-            int score = Minimax(boardcopy, nextside, depth, CurrentDepth + 1);
+            int score = Minimax(boardcopy, nextside, depth, CurrentDepth + 1, alpha, beta);
             // update if appropriate
             if (score > BestScore)
-            {
                 BestScore = score;
-            }
+            
+            if (BestScore > alpha)
+                alpha = BestScore;
+            
+            if (abs(beta) <= alpha)
+                break;
         }
         return BestScore;
     }
@@ -301,14 +309,19 @@ int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth) {
 
             Side nextside = (side == BLACK) ? WHITE : BLACK;
             // recursive call
-            int score = Minimax(boardcopy, nextside, depth, CurrentDepth + 1);
+            int score = Minimax(boardcopy, nextside, depth, CurrentDepth + 1, alpha, beta);
             // update if appropriate
             if (score < WorstScore)
             {
                 WorstScore = score;
             }
+            
+            if (WorstScore < beta)
+                beta = WorstScore;
+                
+            if (abs(beta) >= alpha)
+                break;
         }
         return WorstScore;
     }
-
 }
