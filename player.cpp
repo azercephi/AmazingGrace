@@ -12,14 +12,7 @@ Player::Player(Side side) {
     
     // save sides
     us = side;
-    if (us == BLACK) 
-    {
-        them = WHITE;
-    }
-    else 
-    {
-        them = BLACK;
-    }
+    them = (us == BLACK) ? WHITE : BLACK;
 
     // initialize a board to keep track of game state
 	gameboard = new Board();
@@ -80,7 +73,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
             {
                 Board * gameboardcopy = gameboard->copy();
                 gameboardcopy->doMove(Movector[i], us);
-                int score = Minimax(gameboardcopy, them, 7, 1);
+                int score = Minimax(gameboardcopy, them, 5, 1);
                 if (score > BestScore)
                 {
                     BestMove = Movector[i];
@@ -91,57 +84,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
             // perform our move on our own board
             gameboard->doMove(BestMove, us);
 
-            cerr << "Grace's BestMove: " << BestMove->x << "," << BestMove->y << endl;
+            cerr << "Grace: " << BestMove->x << " " << BestMove->y << endl;
             return BestMove;
         }
-
-    /* 
-        // make a vector of boards-result possibilities that spring from your 
-        // original board, 
-        // from which we will end up only choosing one
-        vector<Board> OurBector = MakeBector(*gameboard, us);
-        
-        // be sure to check that OurBector isn't empty
-        if (!(OurBector.empty()))
-        {
-            // then let's iterate through the boards in that vector, updating their 
-            // ChildMinScore so we can choose the one with the lowest such score
-            for (unsigned int i = 0; i < OurBector.size(); i++) 
-            {
-                // make a vector of the opponent's possible boards
-                vector<Board> TheirBector = MakeBector(OurBector[i], them);
-
-                // get the ChildMinScore
-                int backup = FindBoardScore(OurBector[i], us);
-                OurBector[i].ChildMinScore = FindMinBoard(TheirBector, us, backup);
-            }
-
-            // find the member of OurBector with the lowest ChildMinScore
-            int minChildMin = OurBector[0].ChildMinScore;
-            Board minimaxBoard = OurBector[0];
-
-            for (unsigned int i = 1; i < OurBector.size(); i++) 
-            {
-                if (OurBector[i].ChildMinScore > minChildMin)
-                {
-                    minChildMin = OurBector[i].ChildMinScore;
-                    minimaxBoard = OurBector[i];
-                }
-            }
-            // perform our move on our own board
-            gameboard->doMove(minimaxBoard.originMove, us);
-            
-            // print out selected move
-            if (!(minimaxBoard.originMove == NULL))
-                cerr << "Grace: " << minimaxBoard.originMove->x << " " << minimaxBoard.originMove->y << endl;
-            
-            // return move to actual game
-            return minimaxBoard.originMove;
-        }
-        // else
-        return NULL;
-    
-    */
     }
 
     // naive solution (working AI plays random valid moves)
@@ -149,8 +94,6 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     {
         if (gameboard->hasMoves(us))
         {
-            // test print std::cerr << "Moves available" << std::endl;
-    		// test print std::cerr << "Getting move" << std::endl;
     		for (int i = 0; i < 8; i++) 
             {
                 for (int j = 0; j < 8; j++) 
@@ -311,24 +254,18 @@ int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth) {
     if (CurrentDepth % 2 == 0) // parity 0, our side's move, maximize score
     {
         int BestScore = -70; 
-
+        
         for (unsigned int i = 0; i < Movector.size(); i++)
         {
+            // create an board one move into future
             Board * boardcopy = board->copy();
             boardcopy->doMove(Movector[i], side);
-
-            Side nextside;
-            if (side == BLACK) 
-            {
-                nextside = WHITE;
-            }
-            else 
-            {
-                nextside = BLACK;
-            }
-
+            
+            Side nextside = (side == BLACK) ? WHITE : BLACK;
+            
+            // recursive call
             int score = Minimax(boardcopy, nextside, depth, CurrentDepth + 1);
-
+            // update if appropriate
             if (score > BestScore)
             {
                 BestScore = score;
@@ -342,21 +279,14 @@ int Player::Minimax(Board * board, Side side, int depth, int CurrentDepth) {
         int WorstScore = 70;
         for (unsigned int i = 0; i < Movector.size(); i++)
         {
+            // create an board one move into future
             Board * boardcopy = board->copy();
             boardcopy->doMove(Movector[i], side);
 
-            Side nextside;
-            if (side == BLACK) 
-            {
-                nextside = WHITE;
-            }
-            else 
-            {
-                nextside = BLACK;
-            }
-
+            Side nextside = (side == BLACK) ? WHITE : BLACK;
+            // recursive call
             int score = Minimax(boardcopy, nextside, depth, CurrentDepth + 1);
-
+            // update if appropriate
             if (score < WorstScore)
             {
                 WorstScore = score;
